@@ -17,7 +17,7 @@ bounce_stop = 0.3
 mouse_trajectory = []
 
 class Ball:
-    def __init__(self, x_pos, y_pos, radius, color, mass, velocity_x, velocity_y, retention,id):
+    def __init__(self, x_pos, y_pos, radius, color, mass, velocity_x, velocity_y, retention,id, friction):
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.radius = radius
@@ -29,8 +29,8 @@ class Ball:
         self.id = id
         self.circle = None
         self.select = False
+        self.friction = friction
     
-
     def draw(self):
         self.circle = pygame.draw.circle(screen, self.color, (int(self.x_pos), int(self.y_pos)), self.radius)
     
@@ -44,6 +44,15 @@ class Ball:
                 else:
                     if abs(self.velocity_y) <= bounce_stop:
                         self.velocity_y = 0
+            if (self.x_pos < self.radius + (wall_thickness/2) and self.velocity_x < 0) or (self.x_pos > WITH - self.radius - (wall_thickness/2) and self.velocity_x > 0):
+                self.velocity_x *= -1 * self.retention
+                if abs(self.velocity_x) < bounce_stop:
+                    self.velocity_x = 0
+            if self.velocity_y == 0 and self.velocity_x != 0:
+                if self.velocity_x > 0:
+                    self.velocity_x -= self.friction
+                elif self.velocity_x < 0:
+                    self.velocity_x += self.friction
         else:
             self.velocity_y = y_push
             self.velocity_x = x_push
@@ -64,7 +73,6 @@ class Ball:
             return True
         return self.select
 
-
 def draw_walls():
     left= pygame.draw.line(screen, (255, 255, 255), (0, 0), (0, HEIGHT), wall_thickness)
     right = pygame.draw.line(screen, (255, 255, 255), (WITH, 0), (WITH, HEIGHT), wall_thickness)
@@ -83,9 +91,9 @@ def calc_motion_vector():
 
     return x_velocity, y_velocity
 
-ball1 = Ball(50, 50,30, (104, 0, 0), 100, 0, 0, 0.9,1)
-ball2 = Ball(500, 500,50, (50, 0, 0), 300, 0, 0, 0.9,2)
-ball3 = Ball(200, 200,40, (150, 0, 0), 200, 0, 0, 0.9,3)
+ball1 = Ball(50, 50,30, (104, 0, 0), 100, 0, 0, 0.9,1,0.02)
+ball2 = Ball(500, 500,50, (50, 0, 0), 300, 0, 0, 0.9,2,0.03)
+ball3 = Ball(200, 200,40, (150, 0, 0), 200, 0, 0, 0.9,3,0.04)
 ball_list = [ball1, ball2, ball3]
 
 #main game loop
@@ -124,8 +132,5 @@ while run:
                 for i in range(len(ball_list)):
                         ball_list[i].check_select((-100, -100))
 
-                
-
-            
     pygame.display.flip()
 pygame.quit()
