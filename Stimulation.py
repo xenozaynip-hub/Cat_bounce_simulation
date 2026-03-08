@@ -2,8 +2,6 @@ import pygame
 
 pygame.init()
 
-LINE_X = 999
-LINE_Y = 796
 WITH = 1000
 HEIGHT = 800
 screen = pygame.display.set_mode((WITH, HEIGHT))
@@ -85,8 +83,8 @@ class Ball:
             self.x_pos += self.velocity_x
             self.y_pos += self.velocity_y
         else:
-            self.x_pos = min(mouse[0], LINE_X - self.radius)
-            self.y_pos = min(mouse[1], LINE_Y - self.radius)
+            self.x_pos = max(self.radius + wall_thickness / 2, min(mouse[0], WITH - self.radius - wall_thickness / 2))
+            self.y_pos = max(self.radius + wall_thickness / 2, min(mouse[1], HEIGHT - self.radius - wall_thickness / 2))    
 
     def check_select(self, pos):
         self.select = False
