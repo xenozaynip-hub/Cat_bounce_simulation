@@ -32,9 +32,29 @@ class Ball:
         self.circle = None
         self.select = False
         self.friction = friction
-    
+
+        if self.id == 1:
+            self.image = pygame.image.load('images/cat.jpg')
+            self.image = pygame.transform.scale(self.image, (int(self.radius * 5), int(self.radius * 2)))
+        elif self.id == 2:
+            self.image = pygame.image.load('images/another_cat.jpg')
+            self.image = pygame.transform.scale(self.image, (int(self.radius * 4), int(self.radius * 6)))
+        elif self.id == 3:
+            self.image = pygame.image.load('images/Microwave.jpg')
+            self.image = pygame.transform.scale(self.image, (int(self.radius * 5), int(self.radius * 5)))
+        elif self.id == 4:
+            self.image = pygame.image.load('images/wierd_cat.jpg')
+            self.image = pygame.transform.scale(self.image, (int(self.radius * 3), int(self.radius * 3)))
+        elif self.id == 5:
+            self.image = pygame.image.load('images/cat_on_drugs.jpg')
+            self.image = pygame.transform.scale(self.image, (int(self.radius * 8), int(self.radius * 5)))
+
     def draw(self):
-        self.circle = pygame.draw.circle(screen, self.color, (int(self.x_pos), int(self.y_pos)), self.radius)
+        if hasattr(self, 'image'):
+            screen.blit(self.image, (self.x_pos - self.image.get_width()/2, self.y_pos - self.image.get_height()/2))
+        else:
+            self.circle = pygame.draw.circle(screen, self.color, (int(self.x_pos), int(self.y_pos)), self.radius)
+            self.hitbox = self.circle
     
     def check_gravity(self):
         if not self.select:
@@ -70,9 +90,15 @@ class Ball:
 
     def check_select(self, pos):
         self.select = False
-        if self.circle.collidepoint(pos):
-            self.select = True
-            return True
+        if hasattr(self, 'image'):
+            rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+            if rect.collidepoint(pos):
+                self.select = True
+                return True
+        else:
+            if self.circle.collidepoint(pos):
+                self.select = True
+                return True
         return self.select
 
 def draw_walls():
@@ -97,7 +123,8 @@ ball1 = Ball(50, 50,90, (104, 0, 0), 500, 0, 0, 0.9,1,0.02)
 ball2 = Ball(500, 500,50, (50, 0, 0), 300, 0, 0, 0.7,2,0.03)
 ball3 = Ball(200, 200,40, (150, 0, 0), 200, 0, 0, 0.5,3,0.04)
 ball4 = Ball(300, 300,30, (200, 0, 0), 100, 0, 0, 1,4,0.05)
-ball_list = [ball1, ball2, ball3, ball4]
+ball5 = Ball(400, 400,20, (255, 0, 0), 50, 0, 0, 0.8,5,0.06)
+ball_list = [ball1, ball2, ball3, ball4, ball5]
 
 #main game loop
 run = True
@@ -115,14 +142,17 @@ while run:
     ball2.draw()
     ball3.draw()
     ball4.draw()
+    ball5.draw()
     ball1.update_position(mouse_coords)
     ball2.update_position(mouse_coords)
     ball3.update_position(mouse_coords)
     ball4.update_position(mouse_coords)
+    ball5.update_position(mouse_coords)
     ball1.velocity_y = ball1.check_gravity()
     ball2.velocity_y = ball2.check_gravity()
     ball3.velocity_y = ball3.check_gravity()
     ball4.velocity_y = ball4.check_gravity()
+    ball5.velocity_y = ball5.check_gravity()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -130,7 +160,7 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONDOWN:        
             if event.button == 1:
-                if ball1.check_select(event.pos) or ball2.check_select(event.pos) or ball3.check_select(event.pos) or ball4.check_select(event.pos):
+                if ball1.check_select(event.pos) or ball2.check_select(event.pos) or ball3.check_select(event.pos) or ball4.check_select(event.pos) or ball5.check_select(event.pos):
                     active_select = True
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
