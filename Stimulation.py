@@ -1,6 +1,7 @@
 import pygame
 
 pygame.init()
+pygame.mixer.init()
 
 WITH = 1000
 HEIGHT = 800
@@ -13,6 +14,9 @@ timer = pygame.time.Clock()
 wall_thickness = 10
 gravity = 0.5
 bounce_stop = 0.3
+
+bounce_sound = pygame.mixer.Sound('sounds/bounce.mp3')
+select_sound = pygame.mixer.Sound('sounds/select.mp3')
 
 mouse_trajectory = []
 
@@ -61,11 +65,13 @@ class Ball:
             else:
                 if self.velocity_y > bounce_stop:
                     self.velocity_y = self.velocity_y * -1 * self.retention
+                    bounce_sound.play()
                 else:
                     if abs(self.velocity_y) <= bounce_stop:
                         self.velocity_y = 0
             if (self.x_pos < self.radius + (wall_thickness/2) and self.velocity_x < 0) or (self.x_pos > WITH - self.radius - (wall_thickness/2) and self.velocity_x > 0):
                 self.velocity_x *= -1 * self.retention
+                bounce_sound.play()
                 if abs(self.velocity_x) < bounce_stop:
                     self.velocity_x = 0
             if self.velocity_y == 0 and self.velocity_x != 0:
@@ -92,10 +98,12 @@ class Ball:
             rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
             if rect.collidepoint(pos):
                 self.select = True
+                select_sound.play()
                 return True
         else:
             if self.circle.collidepoint(pos):
                 self.select = True
+                select_sound.play()
                 return True
         return self.select
 
